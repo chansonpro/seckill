@@ -28,7 +28,7 @@ seckill_id BIGINT NOT NULL AUTO_INCREMENT COMMENT '秒杀商品的id',
 user_phone BIGINT NOT NULL COMMENT '用户手机号码',
 state TINYINT NOT NULL DEFAULT -1 COMMENT '状态，-1表示无效，0表示成功，1表示已付款，2表示已发货',
 create_time TIMESTAMP NOT NULL COMMENT '创建时间',
-PRIMARY KEY (seckill_id,user_phone),
+PRIMARY KEY (seckill_id,user_phone),/*联合主键*/
 KEY idx_create_time(create_time)
 )ENGINE=InnoDB DEFAULT CHARSET =utf8 COMMENT ='秒杀成功记录表';
 
@@ -37,4 +37,3 @@ KEY idx_create_time(create_time)
 ALTER TABLE seckill
 DROP INDDEX idx_create_time,
 ADD INDEX idx_c_s(start_time,end_time);
-
