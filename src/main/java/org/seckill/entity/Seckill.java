@@ -17,7 +17,7 @@ public class Seckill {
 
     @Override
     public String toString() {
-        return "Seckill{" +
+        return "SeckillDao{" +
                 "seckillId=" + seckillId +
                 ", name='" + name + '\'' +
                 ", number=" + number +
