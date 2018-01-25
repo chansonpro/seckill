@@ -1,5 +1,7 @@
 package org.seckill.dao;
 
+import com.sun.scenario.effect.Offset;
+import org.apache.ibatis.annotations.Param;
 import org.seckill.entity.Seckill;
 
 import java.util.Date;
@@ -28,10 +30,10 @@ public interface SeckillDao {
 
     /**
      * 根据偏移量查询秒杀商品列表
-     * @param  off
+     * @param  offset
      * @param limit
      * @return list
      */
-    List<Seckill> queryAll(int off, int limit);
+    List<Seckill> queryAll(@Param("offset") int offset, @Param("limit") int limit);
 
 }
