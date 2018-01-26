@@ -1,6 +1,5 @@
 package org.seckill.dao;
 
-import com.sun.scenario.effect.Offset;
 import org.apache.ibatis.annotations.Param;
 import org.seckill.entity.Seckill;
 
