@@ -35,6 +35,10 @@ public class SeckillExecution {
         this.stateInfo = stateInfo;
     }
 
+    public SeckillExecution(long seckillId, SeckillStatEnum repeatKill) {
+
+    }
+
     public long getSeckillId() {
         return seckillId;
     }
