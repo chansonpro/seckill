@@ -2,6 +2,7 @@ package org.seckill.service.impl;
 
 import org.seckill.dao.SeckillDao;
 import org.seckill.dao.SuccessKilledDao;
+import org.seckill.dao.cache.RedisDao;
 import org.seckill.dto.Exposer;
 import org.seckill.dto.SeckillExecution;
 import org.seckill.entity.Seckill;
@@ -40,6 +41,9 @@ public class SeckillServiceImpl implements SeckillService {
     private SeckillDao seckillDao;
 
     @Autowired
+    private RedisDao redisDao;
+
+    @Autowired
     private SuccessKilledDao successKilledDao;
 
 
@@ -69,10 +73,19 @@ public class SeckillServiceImpl implements SeckillService {
      * @return
      */
     public Exposer exportSeckillUrl(long seckillId) {
-        Seckill seckill = seckillDao.queryById(seckillId);
-        //查不到这个秒杀产品的记录
-        if (seckill==null){
-            return new Exposer(false,seckillId);
+        //由于每个用户都要访问这个秒杀接口，因此用redis缓存起来
+        //1.判断是否有缓存
+        Seckill seckill = redisDao.getSeckill(seckillId);
+        if (seckill == null){//不存在
+            //2.访问数据库
+            seckill = seckillDao.queryById(seckillId);
+            //查不到这个秒杀产品的记录
+            if (seckill==null){
+                return new Exposer(false,seckillId);
+            }else {
+                //3.放入数据库
+                redisDao.putSeckill(seckill);
+            }
         }
         //若是秒杀未开启
         Date startTime = seckill.getStartTime();
