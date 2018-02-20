@@ -73,7 +73,8 @@ public class SeckillServiceImpl implements SeckillService {
      * @return
      */
     public Exposer exportSeckillUrl(long seckillId) {
-        //由于每个用户都要访问这个秒杀接口，因此用redis缓存起来
+        //由于每个用户都要访问这个秒杀接口，因此用redis缓存起来，进行优化
+        //通过超时来维护一致性！！。当然还有其他的方式
         //1.判断是否有缓存
         Seckill seckill = redisDao.getSeckill(seckillId);
         if (seckill == null){//不存在
