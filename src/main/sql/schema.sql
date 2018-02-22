@@ -18,10 +18,10 @@ KEY idx_create_time(create_time)
 --初始化数据
 INSERT INTO seckill(name,number,start_time,end_time)
 VALUES
-('3000元秒杀iPhoneX',100,'2017-10-27 00:00:00','2017-10-28 00:00:00'),
-('2000元秒杀OPPOR11',200,'2017-10-27 00:00:00','2017-10-28 00:00:00'),
-('1000元秒杀LENOVO',300,'2017-10-27 00:00:00','2017-10-28 00:00:00'),
-('500元秒杀ipad',400,'2017-10-27 00:00:00','2017-10-28 00:00:00');
+('3000元秒杀iPhoneX',100,'2017-10-27 00:00:00','2019-10-28 00:00:00'),
+('2000元秒杀OPPOR11',200,'2017-10-27 00:00:00','2019-10-28 00:00:00'),
+('1000元秒杀LENOVO',300,'2017-10-27 00:00:00','2019-10-28 00:00:00'),
+('500元秒杀ipad',400,'2018-02-01 00:00:00','2019-10-28 00:00:00');
 --创建秒杀成功记录表
 CREATE TABLE success_killed(
 seckill_id BIGINT NOT NULL AUTO_INCREMENT COMMENT '秒杀商品的id',
@@ -37,3 +37,8 @@ KEY idx_create_time(create_time)
 ALTER TABLE seckill
 DROP INDDEX idx_create_time,
 ADD INDEX idx_c_s(start_time,end_time);
+
+
+INSERT INTO seckill(name,number,start_time,end_time)
+VALUES
+('6000元秒杀mac电脑',10,'2018-01-07 00:00:00','2018-10-28 00:00:00');
