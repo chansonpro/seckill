@@ -8,7 +8,8 @@ import org.slf4j.LoggerFactory;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
 
-import java.util.logging.Logger;
+import org.slf4j.Logger;
+
 
 /**
  * User: chanson-pro
@@ -16,7 +17,7 @@ import java.util.logging.Logger;
  * Description:
  */
 public class RedisDao {
-    private final Logger logger = (Logger) LoggerFactory.getLogger(this.getClass());
+    private final Logger logger = LoggerFactory.getLogger(this.getClass());
     private final JedisPool jedisPool;
 
     //动态的将class文件的字节码，传递到schema，不需要认为的创建schema了
