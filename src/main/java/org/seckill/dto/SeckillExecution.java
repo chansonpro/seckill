@@ -29,14 +29,10 @@ public class SeckillExecution {
         this.successKilled = successKilled;
     }
     //秒杀失败
-    public SeckillExecution(long seckillId, SeckillStatEnum statEnum, String stateInfo) {
+    public SeckillExecution(long seckillId, SeckillStatEnum statEnum) {
         this.seckillId = seckillId;
         this.state = statEnum.getState();
-        this.stateInfo = stateInfo;
-    }
-
-    public SeckillExecution(long seckillId, SeckillStatEnum repeatKill) {
-
+        this.stateInfo = statEnum.getInfo();
     }
 
     public long getSeckillId() {
