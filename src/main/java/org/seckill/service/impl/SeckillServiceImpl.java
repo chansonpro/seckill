@@ -1,5 +1,6 @@
 package org.seckill.service.impl;
 
+import org.apache.commons.collections.MapUtils;
 import org.seckill.dao.SeckillDao;
 import org.seckill.dao.SuccessKilledDao;
 import org.seckill.dao.cache.RedisDao;
@@ -20,7 +21,9 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.DigestUtils;
 
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * User: chanson-pro
@@ -163,6 +166,42 @@ public class SeckillServiceImpl implements SeckillService {
             logger.error(e.getMessage(),e);
             //所以编译期异常转化为运行期异
             throw new SeckillException("seckill inner error :"+e.getMessage());
+        }
+    }
+
+    /**
+     * 执行秒杀操作 by 存储过程
+     *
+     * @param seckillId
+     * @param userPhone
+     * @param md5
+     * @return
+     */
+    public SeckillExecution excuteSeckillProcedure(long seckillId, long userPhone, String md5) {
+        if (md5 == null || !md5.equals(getMd5(seckillId))){
+            return new SeckillExecution(seckillId,SeckillStatEnum.DATE_REWRITE);
+        }
+        Date killTime = new Date();
+        Map<String,Object> map = new HashMap<String, Object>();
+        map.put("seckillId",seckillId);
+        map.put("phone",userPhone);
+        map.put("killTime",killTime);
+        map.put("result",null);
+        try {
+            //执行存储过程，result被赋值
+            seckillDao.killByProcedure(map);
+            //获取result
+            int result = MapUtils.getInteger(map,"result",-2);
+            if (result == 1){//秒杀成功
+                SuccessKilled sk = successKilledDao.
+                        queryByIdWithSeckill(seckillId,userPhone);
+                return new SeckillExecution(seckillId,SeckillStatEnum.SUCCEESS,sk);
+            }else {//如果不成功，根据result判断类型
+                return new SeckillExecution(seckillId,SeckillStatEnum.stateOf(result));
+            }
+        }catch (Exception e){
+            logger.error(e.getMessage(),e);
+            return new SeckillExecution(seckillId,SeckillStatEnum.INNER_ERROR);//内部异常
         }
     }
 }
