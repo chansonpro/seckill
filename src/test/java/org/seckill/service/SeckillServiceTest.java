@@ -20,6 +20,7 @@ import java.util.List;
 @ContextConfiguration({"classpath:spring/spring-dao.xml",
         "classpath:spring/spring-service.xml"})
 public class SeckillServiceTest {
+
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
     @Autowired
@@ -65,12 +66,9 @@ public class SeckillServiceTest {
         Exposer exposer=seckillService.exportSeckillUrl(seckillId);
         if (exposer.isExposed())
         {
-
             System.out.println(exposer);
-
             long userPhone=13251000261L;
             String md5=exposer.getMd5();
-
             try {
                 SeckillExecution seckillExecution = seckillService.excuteSeckill(seckillId, userPhone, md5);
                 System.out.println(seckillExecution);
@@ -87,4 +85,16 @@ public class SeckillServiceTest {
         }
     }
 
+    @Test
+    public void excuteSeckillProcedure(){
+        long seckillId = 1009;
+        long phone = 13269935216L;
+        Exposer exposer = seckillService.exportSeckillUrl(seckillId);
+        if (exposer.isExposed()){
+            String md5 = exposer.getMd5();
+            SeckillExecution execution = seckillService.excuteSeckillProcedure(seckillId,
+                    phone,md5);
+            logger.info(execution.getStateInfo());
+        }
+    }
 }
