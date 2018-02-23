@@ -23,3 +23,6 @@
 Service层实现     | http://www.imooc.com/learn/631
 WEB层实现         | http://www.imooc.com/learn/630
 并发优化          | http://www.imooc.com/learn/632
+
+#注
+windows下redis下载地址：https://github.com/MicrosoftArchive/redis/releases
