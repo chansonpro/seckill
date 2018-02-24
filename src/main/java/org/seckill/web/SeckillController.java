@@ -9,6 +9,8 @@ import org.seckill.exception.RepeatKillException;
 import org.seckill.exception.SeckillCloseException;
 import org.seckill.exception.SeckillException;
 import org.seckill.service.SeckillService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.ui.Model;
@@ -28,6 +30,7 @@ import java.util.List;
 @RequestMapping("/seckill")//url:模块/资源/{}/细分
 public class SeckillController {
 
+    private final Logger logger = LoggerFactory.getLogger(this.getClass());
     @Autowired
     private SeckillService seckillService;
 
@@ -44,7 +47,7 @@ public class SeckillController {
     @RequestMapping(value = "/{seckillId}/detail",method = RequestMethod.GET)
     public String detail(@PathVariable("seckillId")Long seckillId,Model model){
         if(seckillId == null){
-            return "redirect:/seckill/list";
+            return "redirect:/seckill/list";// 请求重定向
         }
         Seckill seckill = seckillService.getBySeckillId(seckillId);
         if (seckill == null){
@@ -55,47 +58,44 @@ public class SeckillController {
     }
     //ajax ,json暴露秒杀接口的方法
     //3.用于返回一个json数据,封装了我们商品的秒杀地址
-    @RequestMapping(value = "/{seckillId}/excute",method = RequestMethod.POST,
+    @RequestMapping(value = "/{seckillId}/exposer",method = RequestMethod.POST,
             produces = {"application/json;charset=UTF-8"})
     @ResponseBody
-    public SeckillResult<Exposer> excute(Long seckillId){
+    public SeckillResult<Exposer> exposer(Long seckillId){
         SeckillResult<Exposer> result;
         try {
             Exposer exposer =  seckillService.exportSeckillUrl(seckillId);
             result = new SeckillResult<Exposer>(true,exposer);
         }catch (Exception e){
-            e.printStackTrace();
+            logger.error(e.getMessage(),e);
             result = new SeckillResult<Exposer>(false,e.getMessage());
         }
         return result;
     }
     //4.封装用户是否秒杀成功的信息
-    @RequestMapping(value = "/{seckillId}/{md5}/excution",method = RequestMethod.POST,produces =
+    @RequestMapping(value = "/{seckillId}/{md5}/execution",method = RequestMethod.POST,produces =
             {"application/json;charset=UTF-8"})
     @ResponseBody
-    public SeckillResult<SeckillExecution> excute(@PathVariable("seckillId") Long seckillId,
-                                                  String md5,
-                                                  @CookieValue(value = "killPhone",required =
-                                                          false)Long phone) {
+    public SeckillResult<SeckillExecution> execute(@PathVariable("seckillId") Long seckillId,
+                                                  @PathVariable("md5") String md5,
+                                                  @CookieValue(value = "killPhone",required = false)Long phone) {
         if (phone == null) {
             return new SeckillResult<SeckillExecution>(false, "手机未注册");
         }
-        SeckillResult<SeckillExecution> result;
+        //SeckillResult<SeckillExecution> result;
         try {
             //SeckillExecution execution = seckillService.excuteSeckill(seckillId, phone, md5);
             // 调用存储过程
             SeckillExecution execution = seckillService.excuteSeckillProcedure(seckillId, phone, md5);
             return new SeckillResult<SeckillExecution>(true, execution);
         } catch (RepeatKillException e2) {
-            SeckillExecution seckillExecution = new SeckillExecution(seckillId, SeckillStatEnum
-                    .REPEAT_KILL);
+            SeckillExecution seckillExecution = new SeckillExecution(seckillId, SeckillStatEnum.REPEAT_KILL);
             return new SeckillResult<SeckillExecution>(true, seckillExecution);
         } catch (SeckillCloseException e1) {
             SeckillExecution seckillExecution = new SeckillExecution(seckillId, SeckillStatEnum.END);
             return new SeckillResult<SeckillExecution>(true, seckillExecution);
         } catch (SeckillException e) {
-            SeckillExecution seckillExecution = new SeckillExecution(seckillId, SeckillStatEnum
-                    .INNER_ERROR);
+            SeckillExecution seckillExecution = new SeckillExecution(seckillId, SeckillStatEnum.INNER_ERROR);
             return new SeckillResult<SeckillExecution>(true, seckillExecution);
         }
     }
